@@ -1,13 +1,60 @@
-@import "~bootstrap/scss/bootstrap.scss";
+.blackBackGround{
+     background-color:black;
+}
 
-/* 
-
-    You can write your own styles here...
+.blueBackground{
+    background-color:#44B2E4;
     
     
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
+}
+.orangeBackground{
+    background-color:#F6B03F;
     
-    import 'relative/path/to/stylesheet.scss';
+    
+}
 
-*/
+.leftPadding{
+    padding-left: 70px;
+}
+
+.rightPadding{
+padding-right: 262px;
+}
+
+.recognizesThat{
+    color:#44B2E4;
+    padding-right: 189px;
+    padding-left: 1px;
+    font-size: 16px;
+}
+
+.colorBlue{
+    
+    
+    color:#44B2E4;
+    width:310px;
+    border-width: 3px 10px 4px 20px;
+    
+}
+
+.fontSize{
+    font-size:15px;
+    
+}
+
+.borderSize{
+    border-width: 2px;
+    background-color:black;
+}
+
+.imgMargin{
+    
+        margin-top: -35px;
+    
+    
+    
+}
+
+.fontSizeFirstRow{
+    font-size:20px;
+}
