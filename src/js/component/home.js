@@ -1,10 +1,56 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
+import { Notifier, Notify } from "bc-react-notifier";
 //include images into your bundle
 
 //create your first component
+
+function getUrlParameter(name) {
+	var params = new URLSearchParams(window.location.search);
+	return params.has(name) ? params.get(name) : null;
+}
+
+const HOST = "https://talenttree-alesanchezr.c9users.io";
+
 export class Home extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			cohort: getUrlParameter("cohort"),
+			student: getUrlParameter("student"),
+			isLoaded: false,
+			selectedCohort: null,
+			selectedStudent: null,
+			graduationDate: null,
+			teachers: []
+		};
+	}
+
+	componentDidMount() {
+		console.log("Params: ", this.state.params);
+
+		fetch(HOST + "/cohort/" + this.state.cohort)
+			.then(response => {
+				if (response == 200) return response.json();
+				this.setState({ cohort: null });
+				throw new Error("There was a problem finding the cohort");
+			})
+			.then(json => {
+				json.data.name = this.state.cohort;
+				json.data.ending_date = this.state.graduationDate;
+				json.data.full_teachers.map(t =>
+					this.state.teachers.push(t.full_name)
+				);
+				this.setState({
+					isLoaded: true,
+					selectedCohort: json
+				});
+			})
+			.catch(err => Notify.error(err.message || "there was a problem"));
+	}
+
 	render() {
+		console.log(this.state.selectedCohort);
 		return (
 			<div className="container">
 				{/*here is the first row with the backgorund color black*/}
