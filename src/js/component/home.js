@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { Notifier, Notify } from "bc-react-notifier";
+import moment from "moment";
 //include images into your bundle
 
 //create your first component
@@ -17,40 +18,78 @@ export class Home extends React.Component {
 		super(props);
 		this.state = {
 			cohort: getUrlParameter("cohort"),
+			token: getUrlParameter("access_token"),
 			student: getUrlParameter("student"),
 			isLoaded: false,
 			selectedCohort: null,
 			selectedStudent: null,
 			graduationDate: null,
-			teachers: []
+			nameOfCohort: null,
+			teachers: [],
+			studentName: null
 		};
 	}
 
 	componentDidMount() {
-		console.log("Params: ", this.state.params);
-
-		fetch(HOST + "/cohort/" + this.state.cohort)
-			.then(response => {
-				if (response == 200) return response.json();
-				this.setState({ cohort: null });
-				throw new Error("There was a problem finding the cohort");
-			})
-			.then(json => {
-				json.data.name = this.state.cohort;
-				json.data.ending_date = this.state.graduationDate;
-				json.data.full_teachers.map(t =>
-					this.state.teachers.push(t.full_name)
+		console.log("v1.0");
+		if (this.state.cohort)
+			fetch(
+				HOST +
+					"/cohort/" +
+					this.state.cohort +
+					"?access_token=" +
+					this.state.token,
+				{ method: "GET" }
+			)
+				.then(res => res.json())
+				.then(json => {
+					let aux = json.data["full_teachers"].map(t => t.full_name);
+					this.setState({
+						isLoaded: true,
+						selectedCohort: json,
+						nameOfCohort: json.data.name,
+						graduationDate: json.data["ending_date"],
+						teachers: aux
+					});
+				})
+				.catch(err =>
+					Notify.error(err.message || "there was a problem")
 				);
-				this.setState({
-					isLoaded: true,
-					selectedCohort: json
-				});
-			})
-			.catch(err => Notify.error(err.message || "there was a problem"));
+		if (this.state.student)
+			fetch(
+				HOST +
+					/student/ +
+					this.state.student +
+					"?access_token=" +
+					this.state.token
+			)
+				.then(res => res.json())
+				.then(json => {
+					this.setState({
+						isLoaded: true,
+						selectedStudent: json,
+						studentName: json.data["full_name"]
+					});
+				})
+				.catch(err =>
+					Notify.error(err.message || "there was a problem")
+				);
 	}
 
+	getName = fullName => {
+		if (fullName) {
+			let arrayOffFirstAndLastName = fullName.split(" ");
+			return arrayOffFirstAndLastName[0];
+		}
+	};
+	getLastName = fullName => {
+		if (fullName) {
+			let arrayOffFirstAndLastName = fullName.split(" ");
+			return arrayOffFirstAndLastName[1];
+		}
+	};
+
 	render() {
-		console.log(this.state.selectedCohort);
 		return (
 			<div className="container">
 				{/*here is the first row with the backgorund color black*/}
@@ -96,12 +135,14 @@ export class Home extends React.Component {
 							</div>
 							<div className="row">
 								<p className="display-4 col-1.5  mx-auto  my-0 rightPadding">
-									&lt; / NAILA
+									&lt; /{" "}
+									{this.getName(this.state.studentName)}
 								</p>
 							</div>
 							<div className="row">
 								<p className="display-4 mx-auto col-1.5 font-weight-bold my-0 leftPadding">
-									KAILIYEVA &gt;
+									{this.getLastName(this.state.studentName)}{" "}
+									&gt;
 								</p>
 							</div>
 							<hr className="my-1 px-5 colorBlue blueBackground mb-0  " />
@@ -115,10 +156,12 @@ export class Home extends React.Component {
 								320+HOURS
 							</p>
 							<p className=" fontSize font-weight-bold mb-0">
-								COHORT V
+								{this.state.nameOfCohort}
 							</p>
 							<p className=" fontSize font-weight-bold mb-0">
-								NOV 30th, 2018
+								{moment(this.state.graduationDate).format(
+									"MMMM Do YYYY"
+								)}
 							</p>
 						</div>
 					</div>
@@ -128,7 +171,7 @@ export class Home extends React.Component {
 					<div className="col">
 						<hr className="my-1 borderSize" />
 						<p className="mb-0 lead font-weight-bold">
-							IGNACIO CORDOBA
+							{this.state.teachers[0]}
 						</p>
 						<p className="mb-0 lead">Lead Instructor</p>
 					</div>
