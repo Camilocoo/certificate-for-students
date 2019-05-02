@@ -26,7 +26,8 @@ export class Home extends React.Component {
 			graduationDate: null,
 			nameOfCohort: null,
 			teachers: [],
-			studentName: null
+			studentName: null,
+			studentStatus: null
 		};
 	}
 
@@ -68,7 +69,8 @@ export class Home extends React.Component {
 					this.setState({
 						isLoaded: true,
 						selectedStudent: json,
-						studentName: json.data["full_name"]
+						studentName: json.data["full_name"],
+						studentStatus: json.data["status"]
 					});
 				})
 				.catch(err =>
@@ -90,7 +92,13 @@ export class Home extends React.Component {
 	};
 
 	render() {
-		return (
+		let error = (
+			<div className="display-1 text-center">
+				<span className="text-danger">404</span> student has not
+				graduated
+			</div>
+		);
+		let certificate = (
 			<div className="container">
 				{/*here is the first row with the backgorund color black*/}
 				<div className="row text-white blackBackGround text-center">
@@ -190,6 +198,13 @@ export class Home extends React.Component {
 						<p className="mb-0 lead">Lead Instructor</p>
 					</div>
 				</div>
+			</div>
+		);
+		return (
+			<div>
+				{this.state.studentStatus == "studies_finished"
+					? certificate
+					: error}
 			</div>
 		);
 	}
